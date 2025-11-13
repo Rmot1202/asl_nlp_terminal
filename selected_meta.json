@@ -1,0 +1,33 @@
+{
+  "requested": [
+    "I",
+    "T",
+    "H",
+    "A",
+    "N",
+    "K",
+    "U"
+  ],
+  "letters": [
+    "I",
+    "T",
+    "H",
+    "A",
+    "N",
+    "K",
+    "U"
+  ],
+  "indices": [
+    4632,
+    359,
+    4480,
+    2622,
+    6133,
+    425,
+    2146
+  ],
+  "csv_path": "/Users/RavenMott1/Downloads/2025 pj ai and datamining/sign_mnist_test.csv",
+  "per_class": 1,
+  "seed": 1202,
+  "note": "Stack order matches 'requested' sequence, each repeated per_class."
+}
