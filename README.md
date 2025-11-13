@@ -275,3 +275,5 @@ See the separate **project paper / slides** for more detailed analysis, results,
 * ASL data: based on the public **Sign Language MNIST** dataset.
 * GPT model: uses the **OpenAI API** (requires your own API key).
 * Code authored by **Raven Mott** for the **CSCI 402 – AI & Data Mining** course.
+
+#https://chatgpt.com/g/g-p-6909860d072881919154a2d1e20446c1-data-mining/project
