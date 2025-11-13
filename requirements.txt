@@ -1,0 +1,8 @@
+numpy
+pandas
+scikit-learn
+opencv-python
+tensorflow==2.16.1
+pyspellchecker
+openai>=1.40.0
+python-dotenv>=1.0.1

@@ -1,0 +1,176 @@
+# ========== ASL → English (Terminal) = CNN + simple NLP ==========
+# Assumes this folder structure:
+#   2025 Project AI and Data/
+#     ├─ sign_mnist_train.csv
+#     ├─ sign_mnist_test.csv
+#     └─ asl_nlp_terminal/   (this folder)
+
+# -------- 1) Create & activate virtual env --------
+# macOS / Linux:
+python3 -m venv .venv-asl
+source .venv-asl/bin/activate
+
+# Windows (PowerShell):
+# py -3 -m venv .venv-asl
+# .\.venv-asl\Scripts\Activate.ps1
+
+# -------- 2) Install requirements --------
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# -------- 3) Train the CNN --------
+# (Paths are relative to this folder; dataset is one level up)
+python train_cnn.py \
+  --train_csv ../sign_mnist_train.csv \
+  --test_csv  ../sign_mnist_test.csv \
+  --out_dir   artifacts
+
+# After training, you should have: artifacts/asl_cnn.keras
+
+awesome—here’s the rest of your terminal guide, picking up right after training the CNN.
+
+---
+
+## -------- 4) (One-time) Enable GPT + optional PNG previews --------
+
+Make sure your env has the extras:
+
+```bash
+pip install --upgrade openai>=1.40.0 imageio
+```
+
+Set your OpenAI key (skip if you only want raw letters back):
+
+```bash
+# macOS / Linux
+export OPENAI_API_KEY="sk-..."
+
+# Windows (PowerShell)
+# setx OPENAI_API_KEY "sk-..."
+# $env:OPENAI_API_KEY="sk-..."
+```
+
+> Note: If the key isn’t set, inference still runs; you’ll just get spaced raw letters instead of GPT-naturalized text.
+
+---
+
+## -------- 5) Select images by letters (separate step) --------
+
+Use the selector to pull sample images for the letters you want and save them to disk for inference.
+
+**Example A: phrase mode (easiest)**
+
+```bash
+python pick_by_letters.py \
+  --csv_path ../sign_mnist_test.csv \
+  --phrase  "I LOVE YOU" \
+  --per_class 1 \
+  --out_dir  picks_iloveyou \
+  --save_pngs
+```
+
+**Example B: explicit letters**
+
+```bash
+python pick_by_letters.py \
+  --csv_path ../sign_mnist_test.csv \
+  --letters I L O V E Y O U \
+  --per_class 1 \
+  --out_dir  picks_iloveyou \
+  --save_pngs
+```
+
+This creates:
+
+```
+picks_iloveyou/
+  ├─ selected_images.npy      # (N, 28, 28) float32 in [0,1]
+  ├─ selected_meta.json       # letters, indices, reproducibility info
+  └─ pngs/*.png               # (only if --save_pngs)
+```
+
+> Heads-up: SL-MNIST excludes **J** and **Z** (motion letters). The script will error if you ask for them.
+
+---
+
+## -------- 6) Run inference → GPT naturalization --------
+
+Feed the saved `.npy` to your updated `infer_and_nlp.py`:
+
+```bash
+python infer_and_nlp.py \
+  --model_path artifacts/asl_cnn.keras \
+  --npy_path   picks_iloveyou/selected_images.npy \
+  --meta_json  picks_iloveyou/selected_meta.json \
+  --gpt_model  gpt-4o-mini \
+  --min_conf   0.0 \
+  --save_meta  runs/iloveyou_run.json
+```
+
+You’ll see:
+
+* per-image predictions + confidences,
+* the raw letter sequence (e.g., `ILOVEYOU`),
+* **Naturalized (GPT)** output (e.g., `I love you.`).
+
+---
+
+## -------- 7) Quick sanity checks --------
+
+* Try single letters:
+
+  ```bash
+  python pick_by_letters.py --csv_path ../sign_mnist_test.csv --letters R A V E N --per_class 1 --out_dir picks_raven
+  python infer_and_nlp.py --model_path artifacts/asl_cnn.keras --npy_path picks_raven/selected_images.npy --meta_json picks_raven/selected_meta.json
+  ```
+* Bump variety (grab multiple images per letter, stacked in order):
+
+  ```bash
+  python pick_by_letters.py --csv_path ../sign_mnist_test.csv --letters I L O V E --per_class 3 --out_dir picks_varied
+  ```
+* Filter low-confidence letters:
+
+  ```bash
+  python infer_and_nlp.py --model_path artifacts/asl_cnn.keras --npy_path picks_varied/selected_images.npy --min_conf 0.8
+  ```
+
+---
+
+## -------- 8) Folder layout (reference) --------
+
+```
+2025 Project AI and Data/
+├─ sign_mnist_train.csv
+├─ sign_mnist_test.csv
+└─ asl_nlp_terminal/
+   ├─ requirements.txt
+   ├─ train_cnn.py
+   ├─ infer_and_nlp.py            # uses GPT; reads selected_images.npy
+   ├─ pick_by_letters.py          # separate selector
+   ├─ utils.py
+   ├─ artifacts/
+   │  └─ asl_cnn.keras            # created by training
+   ├─ picks_iloveyou/             # created by selector
+   │  ├─ selected_images.npy
+   │  ├─ selected_meta.json
+   │  └─ pngs/
+   └─ runs/
+      └─ iloveyou_run.json        # optional report
+```
+
+---
+
+## -------- 9) Troubleshooting --------
+
+* ** ValueError: unsupported letters** → SL-MNIST doesn’t have **J** or **Z**; remove them.
+* **All predictions low confidence** → lower `--min_conf`, increase `--per_class`, or retrain/augment.
+* **Different model preprocessing** → tweak the normalization in both scripts (currently simple [0,1]).
+* **No GPT output** → ensure `OPENAI_API_KEY` is set; otherwise you’ll get spaced letters only.
+
+---
+
+## -------- 10) Deactivate virtual env --------
+
+```bash
+deactivate
+```
