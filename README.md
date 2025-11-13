@@ -15,6 +15,14 @@ The prototype focuses on:
 No GUI or mobile app is included here; everything runs from the command line to emphasize the **core AI pipeline**.
 
 ---
+## Video Walkthrough
+
+
+<img src='demo_AI.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+<!-- Replace this with whatever GIF tool you used! -->
+GIF created with ...  
+[Kap](https://getkap.co/) for macOS
 
 ## 1. Project Overview
 
