@@ -1,0 +1,55 @@
+{
+  "source": {
+    "mode": "npy",
+    "path": "/Users/RavenMott1/Downloads/2025 pj ai and datamining/asl_nlp_terminal/picks_ithankyou/selected_images.npy"
+  },
+  "pred_letters": [
+    "I",
+    "T",
+    "H",
+    "A",
+    "N",
+    "K",
+    "U"
+  ],
+  "pred_confidences": [
+    0.9999649524688721,
+    0.6865979433059692,
+    0.9467349052429199,
+    0.9999949932098389,
+    0.9954824447631836,
+    0.9276576638221741,
+    0.999125063419342
+  ],
+  "kept_letters": [
+    "I",
+    "T",
+    "H",
+    "A",
+    "N",
+    "K",
+    "U"
+  ],
+  "kept_confidences": [
+    0.9999649524688721,
+    0.6865979433059692,
+    0.9467349052429199,
+    0.9999949932098389,
+    0.9954824447631836,
+    0.9276576638221741,
+    0.999125063419342
+  ],
+  "raw_sequence": "ITHANKU",
+  "naturalized": "I THANK YOU.",
+  "gpt_model": "gpt-4o-mini",
+  "min_conf": 0.0,
+  "requested_letters": [
+    "I",
+    "T",
+    "H",
+    "A",
+    "N",
+    "K",
+    "U"
+  ]
+}
